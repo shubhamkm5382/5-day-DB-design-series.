@@ -40,6 +40,10 @@ The goal is to design a database to:
 * OrderItems
 * Payments
 
+## 📊 ER Diagram
+
+![ER Diagram](./diagram.png)
+
 ## 🚀 Learning
 
 This helped me understand:

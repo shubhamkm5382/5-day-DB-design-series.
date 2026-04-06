@@ -8,11 +8,13 @@ Each day focuses on solving a practical problem using proper ER modeling and nor
 
 * Improve database design skills
 * Think in real-world scenarios
-* Build scalable and clean schemas
+* Build scalable and clean schemasa
 
-## 📅 Progress
+## 📊 ER Diagram
 
-* Day 1 → Instagram Thrift Store DB Design ✅
+# Day 1 → Instagram Thrift Store DB Design ✅
+![Day 1 ER Diagram](day-01-instagram-thrift-store/diagram.png)
+
 * Day 2 → Coming Soon...
 * Day 3 → Coming Soon...
 * Day 4 → Coming Soon...
