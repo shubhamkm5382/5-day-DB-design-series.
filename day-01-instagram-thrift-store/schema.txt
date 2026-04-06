@@ -1,5 +1,4 @@
-//  CUSTOMERS
-
+// CUSTOMERS
 customers [icon: user] {
   id serial pk
   name varchar(100) not null
@@ -12,91 +11,73 @@ customers [icon: user] {
   country varchar(50)
 }
 
-//  PRODUCTS
-
+// PRODUCTS
 products [icon: package] {
   id serial pk
   name varchar(150) not null
-
   product_type enum(thrifted, handmade)
-
   category varchar(50)
   brand varchar(100)
-  gender enum(male, female)
+  gender enum(male, female, unisex)
   description text
-
   created_at timestamp
   updated_at timestamp
 }
 
-
-
 // INVENTORY
-
 inventory [icon: database] {
   id serial pk
   product_id int fk
   size varchar(20)
   color varchar(30)
   quantity int
-
+  condition varchar(50)
   price decimal(10,2)
-
   created_at timestamp
   updated_at timestamp
 }
 
-
 // ORDERS
-
 orders [icon: shopping-cart] {
   id serial pk
   customer_id int fk
-
   order_date timestamp
   total_amount decimal(10,2)
-
   order_status enum(order_received, shipped, delivered, cancelled)
 }
 
-
-
 // ORDER ITEMS
-
 order_items [icon: list] {
   id serial pk
   order_id int fk
   inventory_id int fk
   quantity int
-
   price_at_time decimal(10,2)
 }
 
-
-
 // PAYMENTS
-
 payments [icon: credit-card] {
   id serial pk
   order_id int fk
-
   amount decimal(10,2)
-
   payment_status enum(paid, failed)
   payment_method enum(UPI, card)
-
   payment_txn_id varchar(150)
-
   payment_date timestamp
 }
 
-
+// SHIPPING
+shipping [icon: truck] {
+  id serial pk
+  order_id int fk
+  shipping_status enum(pending, shipped, delivered)
+  tracking_number varchar(150)
+  delivery_date date
+}
 
 products.id < inventory.product_id
-
 customers.id < orders.customer_id
-
 orders.id < order_items.order_id
 inventory.id < order_items.inventory_id
-
 orders.id < payments.order_id
+orders.id < shipping.order_id
