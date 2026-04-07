@@ -1,0 +1,133 @@
+// TRAINERS
+
+trainers {
+  trainer_id serial pk
+  full_name varchar(100) not null
+  email varchar(150) unique not null
+  phone varchar(15)
+  specialization varchar(100)
+  bio text
+  experiance varchar(15)
+  instagram_handle varchar(100)
+  is_active boolean
+}
+
+// CLIENTS
+
+clients {
+  client_id serial pk
+  full_name varchar(100) not null
+  email varchar(150) unique not null
+  phone varchar(15)
+  date_of_birth date
+  gender varchar(10)
+  height_cm decimal
+  primary_goal varchar(255)
+  is_active boolean
+}
+
+// PROGRAMS (coaching plans)
+
+programs {
+  program_id serial pk
+  program_name varchar(150) not null
+  program_type varchar(50)
+  description text
+  duration_weeks int
+  price decimal
+  is_active boolean
+}
+
+// SUBSCRIPTIONS (tracks which client bought which plan from which trainer)
+
+subscriptions {
+  subscription_id serial pk
+  client_id int fk
+  trainer_id int fk
+  program_id int fk
+  start_date date
+  end_date date
+  billing_cycle varchar(50)
+  total_amount decimal
+  status varchar(50)
+}
+
+// CONSULTATIONS (one-off calls)
+
+consultations {
+  consultation_id serial pk
+  client_id int fk
+  trainer_id int fk
+  scheduled_at timestamp
+  duration_minutes int
+  mode varchar(50)
+  meeting_link text
+  status varchar(50)
+  notes text
+}
+
+// LIVE SESSIONS (group sessions, no attendance tracking)
+
+live_sessions {
+  live_session_id serial pk
+  trainer_id int fk
+  program_id int fk
+  scheduled_at timestamp
+  duration_minutes int
+  title varchar(150)
+  meeting_link text
+  capacity int
+  status varchar(50)
+}
+
+// CHECK-INS (weekly progress + trainer feedback merged)
+
+check_ins {
+  check_in_id serial pk
+  client_id int fk
+  subscription_id int fk
+  submitted_at timestamp
+  week_no int
+  weight_kg decimal
+  measurements_text text            // e.g., "Chest:40, Waist:32"
+  progress_summary text
+  client_notes text
+  trainer_feedback_text text        // trainer ka feedback same table mein
+  trainer_feedback_at timestamp
+}
+
+// PAYMENTS
+
+payments {
+  payment_id serial pk
+  subscription_id int fk
+  amount decimal
+  paid_at timestamp
+  payment_method varchar(50)
+  transaction_ref varchar(150)
+  payment_status varchar(50)
+}
+
+// RELATIONSHIPS (foreign keys)
+
+// trainers & clients
+trainers.trainer_id < subscriptions.trainer_id     // 1 Trainer ke multiple subscriptions
+clients.client_id < subscriptions.client_id        // 1 Client multiple subscriptions le sakta hai
+
+// programs
+programs.program_id < subscriptions.program_id     // 1 Program ko bohot se clients subscribe kar sakte hain
+programs.program_id < live_sessions.program_id     // 1 Program ke under multiple live sessions
+
+// consultations
+clients.client_id < consultations.client_id        // 1 Client multiple consultations book kar sakta hai
+trainers.trainer_id < consultations.trainer_id     // 1 Trainer multiple clients ko consultation de sakta hai
+
+// live sessions
+trainers.trainer_id < live_sessions.trainer_id     // 1 Trainer multiple live sessions host karega
+
+// check-ins
+clients.client_id < check_ins.client_id            // 1 Client ke bohot saare weekly check-ins
+subscriptions.subscription_id < check_ins.subscription_id   // 1 Subscription ke multiple check-ins (weekly)
+
+// payments
+subscriptions.subscription_id < payments.subscription_id    // 1 Subscription ke multiple payments (recurring/installment)
