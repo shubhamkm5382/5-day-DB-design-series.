@@ -1,0 +1,143 @@
+// PATIENTS
+
+patients {
+  patient_id serial pk
+  full_name varchar(100) not null
+  date_of_birth date
+  gender varchar(10)
+  phone varchar(15) unique
+  email varchar(100) unique
+  address text
+  blood_group varchar(10)
+  created_at timestamp default now()
+  updated_at timestamp default now()
+}
+
+
+// DOCTORS
+
+doctors {
+  doctor_id serial pk
+  full_name varchar(100) not null
+  specialty archar(100)
+  experience_years int
+  phone varchar(15) unique
+  email varchar(100) unique
+  is_active boolean default true
+  created_at timestamp default now()
+  updated_at timestamp default now()
+}
+
+
+// APPOINTMENTS 
+
+appointments {
+  appointment_id serial pk
+  patient_id int fk not null
+  doctor_id int fk not null
+  appointment_datetime timestamp not null
+  status varchar(20) default 'booked'   // booked, cancelled, completed
+  reason text
+  created_at timestamp default now()
+  updated_at timestamp default now()
+}
+
+
+// CONSULTATIONS (Actual Visit)
+
+consultations {
+  consultation_id serial pk
+  appointment_id int fk unique
+  patient_id int fk not null
+  doctor_id int fk not null
+  consultation_datetime timestamp not null
+  diagnosis text
+  notes text
+  advice text
+  follow_up_date date
+  created_at timestamp default now()
+  updated_at timestamp default now()
+}
+
+
+// DIAGNOSTIC TESTS
+
+diagnostic_tests {
+  test_id serial pk
+  test_name varchar(150) not null
+  test_code varchar(50) unique
+  category varchar(100)
+  price decimal(10,2)
+  created_at timestamp default now()
+}
+
+// TEST PRESCRIPTIONS 
+test_prescriptions {
+  prescription_id serial pk
+  consultation_id int fk not null
+  test_id int fk not null
+  status varchar(20) default 'prescribed'   // prescribed, in_progress, completed
+  prescribed_date timestamp default now()
+  notes text
+  created_at timestamp default now()
+  updated_at timestamp default now()
+}
+
+
+// TEST REPORTS 
+
+test_reports {
+  report_id serial pk
+  prescription_id int fk unique
+  report_date timestamp
+  findings text
+  report_file_url text
+  status varchar(20) default 'pending'   // pending, ready, delivered
+  created_at timestamp default now()
+}
+
+
+// PAYMENTS 
+
+payments {
+  payment_id serial pk
+  patient_id int fk not null
+  appointment_id int fk null
+  consultation_id int fk null
+  amount decimal(10,2) not null
+  payment_method varchar(30)   // cash, upi, card
+  status varchar(20) default 'paid'   // paid, pending, failed
+  payment_date timestamp default now()
+  
+}
+
+// ========================================
+// RELATIONSHIPS
+// ========================================
+
+// PATIENT ↔ APPOINTMENT
+patients.patient_id < appointments.patient_id
+
+// DOCTOR ↔ APPOINTMENT
+doctors.doctor_id < appointments.doctor_id
+
+// APPOINTMENT ↔ CONSULTATION (1:1)
+appointments.appointment_id - consultations.appointment_id
+
+// PATIENT ↔ CONSULTATION
+patients.patient_id < consultations.patient_id
+
+// DOCTOR ↔ CONSULTATION
+doctors.doctor_id < consultations.doctor_id
+
+// CONSULTATION ↔ TEST PRESCRIPTIONS (1:1)
+consultations.consultation_id - test_prescriptions.consultation_id
+
+// TEST ↔ TEST PRESCRIPTIONS
+diagnostic_tests.test_id < test_prescriptions.test_id
+
+// PRESCRIPTION ↔ REPORT (1:1)
+test_prescriptions.prescription_id - test_reports.prescription_id
+
+// PATIENT ↔ PAYMENTS
+patients.patient_id < payments.patient_id

@@ -18,7 +18,9 @@ Each day focuses on solving a practical problem using proper ER modeling and nor
 # Day 2 → Fitness Influencer Coaching Platform 
 ![Day 2 ER Diagram](day-02-fitness-influencer-coaching-platform/diagram.png)
 
-* Day 3 → Coming Soon...
+# Day 3 → Clinic Appointment and Diagnostics Platform 
+![Day 3 ER Diagram](day-03-clinic-appointment-and-diagnostics-patform/diagram.png)
+
 * Day 4 → Coming Soon...
 * Day 5 → Coming Soon...
 
