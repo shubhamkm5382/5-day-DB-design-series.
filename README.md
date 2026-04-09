@@ -21,7 +21,10 @@ Each day focuses on solving a practical problem using proper ER modeling and nor
 # Day 3 → Clinic Appointment and Diagnostics Platform 
 ![Day 3 ER Diagram](day-03-clinic-appointment-and-diagnostics-patform/diagram.png)
 
-* Day 4 → Coming Soon...
+# Day 4 → Comic-Con Parking System 
+![Day 4 ER Diagram](day-4-comic-con-parking-system/diagram.png)
+
+
 * Day 5 → Coming Soon...
 
 ## 🛠 Tools Used

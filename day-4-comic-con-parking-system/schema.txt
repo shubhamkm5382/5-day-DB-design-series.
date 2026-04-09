@@ -1,0 +1,131 @@
+// ========================================
+// VEHICLE TYPES 
+// ========================================
+vehicle_types [icon: truck, color: blue] {
+  vehicle_type_id serial pk
+  name varchar(50) not null unique
+}
+
+// ========================================
+// VEHICLES 
+// ========================================
+vehicles [icon: car, color: blue] {
+  vehicle_id serial pk
+  vehicle_number varchar(20) unique not null
+  vehicle_type_id int fk not null
+  owner_name varchar(100)
+  phone varchar(15)
+  created_at timestamp default now()
+}
+
+// ========================================
+// ACCESS CATEGORIES 
+// ========================================
+access_categories [icon: tag, color: orange] {
+  category_id serial pk
+  name varchar(50) not null unique
+}
+
+// ========================================
+// PARKING ZONES 
+// ========================================
+parking_zones [icon: map, color: purple] {
+  zone_id serial pk
+  zone_name varchar(50) not null
+  description text
+}
+
+// ========================================
+// PARKING LEVELS 
+// ========================================
+parking_levels [icon: layers, color: purple] {
+  level_id serial pk
+  zone_id int fk not null
+  level_name varchar(20)
+}
+
+// ========================================
+// PARKING SPOTS 
+// ========================================
+parking_spots [icon: square, color: red] {
+  spot_id serial pk
+  level_id int fk not null
+  spot_number varchar(20) not null
+  vehicle_type_id int fk not null
+  category_id int fk null
+  is_active boolean default true
+
+  UNIQUE(level_id, spot_number)
+}
+
+// ========================================
+// PARKING TICKETS 
+// ========================================
+parking_tickets [icon: ticket, color: green] {
+  ticket_id serial pk
+  ticket_number varchar(50) unique not null
+  issued_at timestamp default now()
+}
+
+// ========================================
+// PARKING SESSIONS 
+// ========================================
+parking_sessions [icon: clock, color: green] {
+  session_id serial pk
+  vehicle_id int fk not null
+  spot_id int fk not null
+  ticket_id int fk unique
+  category_id int fk null
+
+  entry_time timestamp not null
+  exit_time timestamp
+  status varchar(20) default 'active'
+
+  duration_minutes int
+  created_at timestamp default now()
+}
+
+// ========================================
+// PAYMENTS 💰
+// ========================================
+payments [icon: credit-card, color: teal] {
+  payment_id serial pk
+  session_id int fk unique not null
+  amount decimal(10,2) not null
+  payment_method varchar(30)
+  status varchar(20) default 'paid'
+  transaction_ref varchar(100)
+  paid_at timestamp
+}
+
+// ========================================
+// RELATIONSHIPS 🔗
+// ========================================
+
+// VEHICLE TYPE → VEHICLES
+vehicle_types.vehicle_type_id < vehicles.vehicle_type_id
+
+// VEHICLE → SESSIONS
+vehicles.vehicle_id < parking_sessions.vehicle_id
+
+// ZONE → LEVEL → SPOTS
+parking_zones.zone_id < parking_levels.zone_id
+parking_levels.level_id < parking_spots.level_id
+
+// VEHICLE TYPE → SPOTS
+vehicle_types.vehicle_type_id < parking_spots.vehicle_type_id
+
+// CATEGORY → SPOTS (reserved)
+access_categories.category_id < parking_spots.category_id
+
+// CATEGORY → SESSIONS
+access_categories.category_id < parking_sessions.category_id
+
+// SPOT → SESSIONS
+parking_spots.spot_id < parking_sessions.spot_id
+
+// SESSION → TICKET
+parking_sessions.session_id - parking_tickets.ticket_id
+
+// SESSION → PAYMENT
+parking_sessions.session_id - payments.session_id
