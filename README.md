@@ -24,8 +24,8 @@ Each day focuses on solving a practical problem using proper ER modeling and nor
 # Day 4 → Comic-Con Parking System 
 ![Day 4 ER Diagram](day-04-comic-con-parking-system/diagram.png)
 
-
-* Day 5 → Coming Soon...
+# Day 5 → Smart Elevator Control
+![Day 5 ER Diagram](day-day-05-smart-elevator-control/diagram.png)
 
 ## 🛠 Tools Used
 

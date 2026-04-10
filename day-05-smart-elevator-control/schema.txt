@@ -1,0 +1,168 @@
+// ========================================
+// BUILDINGS 
+// ========================================
+buildings [icon: building, color: purple] {
+  building_id serial pk
+  name varchar(100) not null
+  address text
+  created_at timestamp default now()
+}
+
+// ========================================
+// ZONES 
+// ========================================
+zones [icon: map, color: purple] {
+  zone_id serial pk
+  building_id int fk not null
+  zone_name varchar(50) not null
+
+  UNIQUE(building_id, zone_name)
+}
+
+// ========================================
+// FLOORS 
+// ========================================
+floors [icon: layers, color: blue] {
+  floor_id serial pk
+  building_id int fk not null
+  zone_id int fk null
+  floor_number int not null
+  floor_name varchar(50)
+
+  UNIQUE(building_id, floor_number)
+}
+
+// ========================================
+// ELEVATOR SHAFTS 
+// ========================================
+elevator_shafts [icon: grid, color: gray] {
+  shaft_id serial pk
+  building_id int fk not null
+  shaft_code varchar(20) not null
+
+  UNIQUE(building_id, shaft_code)
+}
+
+// ========================================
+// ELEVATORS 
+// ========================================
+elevators [icon: arrow-up, color: orange] {
+  elevator_id serial pk
+  shaft_id int fk unique not null
+  building_id int fk not null
+  zone_id int fk null
+  elevator_number varchar(20) not null
+
+  capacity_person int
+  max_weight_kg int
+
+  is_active boolean default true
+  created_at timestamp default now()
+
+  UNIQUE(building_id, elevator_number)
+}
+
+// ========================================
+// ELEVATOR - FLOOR (M:N)
+// ========================================
+elevator_floors [icon: link, color: gray] {
+  id serial pk
+  elevator_id int fk not null
+  floor_id int fk not null
+
+  UNIQUE(elevator_id, floor_id)
+}
+
+// ========================================
+// RIDE REQUESTS 
+// ========================================
+ride_requests [icon: bell, color: red] {
+  request_id serial pk
+  building_id int fk not null
+  from_floor_id int fk not null
+  to_floor_id int fk not null
+
+  requested_at timestamp default now()
+  status varchar(20) default 'pending'   // pending, assigned, completed
+
+  requested_by varchar(50)
+}
+
+// ========================================
+// RIDE TRIPS 
+// ========================================
+ride_trips [icon: route, color: green] {
+  trip_id serial pk
+  request_id int fk unique not null
+  elevator_id int fk not null
+
+  assigned_at timestamp default now()
+  picked_up_at timestamp
+  completed_at timestamp
+
+  status varchar(20) default 'assigned'  // assigned, in_progress, completed
+
+  actual_from_floor_id int fk
+  actual_to_floor_id int fk
+}
+
+// ========================================
+// ELEVATOR STATUS 
+// ========================================
+elevator_status [icon: activity, color: green] {
+  elevator_id int pk fk
+  current_floor_id int fk
+  state varchar(20)   // idle, moving, maintenance
+  updated_at timestamp default now()
+}
+
+// ========================================
+// MAINTENANCE LOGS 
+// ========================================
+maintenance_logs [icon: wrench, color: teal] {
+  log_id serial pk
+  elevator_id int fk not null
+
+  start_time timestamp not null
+  end_time timestamp
+
+  maintenance_type varchar(100)
+  description text
+
+  status varchar(20) default 'ongoing'
+}
+
+// ========================================
+// RELATIONSHIPS 🔗
+// ========================================
+
+// BUILDING
+buildings.building_id < zones.building_id
+buildings.building_id < floors.building_id
+buildings.building_id < elevators.building_id
+buildings.building_id < elevator_shafts.building_id
+buildings.building_id < ride_requests.building_id
+
+// ZONE
+zones.zone_id < floors.zone_id
+zones.zone_id < elevators.zone_id
+
+// SHAFT → ELEVATOR
+elevator_shafts.shaft_id < elevators.shaft_id
+
+// FLOOR
+floors.floor_id < ride_requests.from_floor_id
+floors.floor_id < ride_requests.to_floor_id
+floors.floor_id < elevator_floors.floor_id
+floors.floor_id < ride_trips.actual_from_floor_id
+floors.floor_id < ride_trips.actual_to_floor_id
+floors.floor_id < elevator_status.current_floor_id
+
+// ELEVATOR
+elevators.elevator_id < elevator_floors.elevator_id
+elevators.elevator_id < ride_trips.elevator_id
+elevators.elevator_id < maintenance_logs.elevator_id
+elevators.elevator_id < elevator_status.elevator_id
+
+// REQUEST → TRIP
+ride_requests.request_id < ride_trips.request_id
