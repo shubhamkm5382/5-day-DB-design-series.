@@ -13,10 +13,8 @@ buildings [icon: building, color: purple] {
 // ========================================
 zones [icon: map, color: purple] {
   zone_id serial pk
-  building_id int fk not null
-  zone_name varchar(50) not null
-
-  UNIQUE(building_id, zone_name)
+  building_id int fk not null UNIQUE
+  zone_name varchar(50) not null UNIQUE
 }
 
 // ========================================
@@ -28,8 +26,6 @@ floors [icon: layers, color: blue] {
   zone_id int fk null
   floor_number int not null
   floor_name varchar(50)
-
-  UNIQUE(building_id, floor_number)
 }
 
 // ========================================
@@ -39,8 +35,6 @@ elevator_shafts [icon: grid, color: gray] {
   shaft_id serial pk
   building_id int fk not null
   shaft_code varchar(20) not null
-
-  UNIQUE(building_id, shaft_code)
 }
 
 // ========================================
@@ -58,8 +52,6 @@ elevators [icon: arrow-up, color: orange] {
 
   is_active boolean default true
   created_at timestamp default now()
-
-  UNIQUE(building_id, elevator_number)
 }
 
 // ========================================
@@ -69,8 +61,6 @@ elevator_floors [icon: link, color: gray] {
   id serial pk
   elevator_id int fk not null
   floor_id int fk not null
-
-  UNIQUE(elevator_id, floor_id)
 }
 
 // ========================================
